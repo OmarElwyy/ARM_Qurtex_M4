@@ -1,9 +1,4 @@
-/*
- * RCC_program.c
- *
- *  Created on: May 4, 2023
- *      Author: ziads
- */
+
 
 
 #include "../../LIB/STD_LIB.h"
