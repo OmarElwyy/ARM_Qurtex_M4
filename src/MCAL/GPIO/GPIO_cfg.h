@@ -1,15 +1,9 @@
-/*
- * GPIO_cfg.h
- *
- *  Created on: May 11, 2023
- *      Author: Omar Elwy
- */
-
-#ifndef MCAL_GPIO_GPIO_CFG_H_
-#define MCAL_GPIO_GPIO_CFG_H_
+#ifndef GPIO_PRIVATE_H_
+#define GPIO_PRIVATE_H_
 
 
 
 
 
-#endif /* MCAL_GPIO_GPIO_CFG_H_ */
+
+#endif

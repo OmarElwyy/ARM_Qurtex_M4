@@ -1,20 +1,12 @@
 /*
- * RCC_Program.c
+ * RCC_program.c
  *
  *  Created on: May 4, 2023
- *      Author: Elwy
+ *      Author: ziads
  */
 
 
-/***********************************************************************************/
-// File Discretion : Program file for RCC Module
-/**********************************************************************************/
-
-// 1- set system control
-// system clock source is a prebuild confg
-// 2- set enable /disable Peripheral
-
-#include "../../LIB/STD_TYPES.h"
+#include "../../LIB/STD_LIB.h"
 #include "../../LIB/BIT_MATHS.h"
 
 #include "RCC_interface.h"
@@ -22,74 +14,101 @@
 #include "RCC_cfg.h"
 
 
+RCC_ErrorState_t RCC_voidEnablePeripheralClock(u8 Copy_u8BusID , u8 Copy_u8PeripheralID)
+{
+	/* enum initially ok */
+	RCC_ErrorState_t Local_ErrorState = OK;
+	if((Copy_u8PeripheralID>=0)&&(Copy_u8PeripheralID<=31))
+	{
+
+		switch(Copy_u8BusID)
+		{
+		case RCC_AHB1 :
+			SET_BIT(RCC_AHB1ENR,Copy_u8PeripheralID);
+			break;
+		case RCC_AHB2 :
+			SET_BIT(RCC_AHB2ENR,Copy_u8PeripheralID);
+			break;
+		case RCC_APB1 :
+			SET_BIT(RCC_APB1ENR,Copy_u8PeripheralID);
+			break;
+		case RCC_APB2 :
+			SET_BIT(RCC_APB2ENR,Copy_u8PeripheralID);
+			break;
+
+		default : Local_ErrorState = Wrong_Bus;
+		break;
+		}
+
+	}
+	else
+	{
+		Local_ErrorState = Invalid_Peripheral_ID;
+
+	}
+	return Local_ErrorState ;
+}
+
+
+RCC_ErrorState_t RCC_voidDisablePeripheralClock(u8 Copy_u8BusID , u8 Copy_u8PeripheralID)
+{
+	/* enum initially ok */
+	RCC_ErrorState_t Local_ErrorState = OK;
+	if((Copy_u8PeripheralID>=0)&&(Copy_u8PeripheralID<=31))
+	{
+		switch(Copy_u8BusID)
+		{
+		case RCC_AHB1 :
+			CLR_BIT(RCC_AHB1ENR,Copy_u8PeripheralID);
+			break;
+		case RCC_AHB2 :
+			CLR_BIT(RCC_AHB2ENR,Copy_u8PeripheralID);
+			break;
+		case RCC_APB1 :
+			CLR_BIT(RCC_APB1ENR,Copy_u8PeripheralID);
+			break;
+		case RCC_APB2 :
+			CLR_BIT(RCC_APB2ENR,Copy_u8PeripheralID);
+			break;
+
+		default : Local_ErrorState = Wrong_Bus;
+		break;
+		}
+
+	}
+	else
+	{
+		Local_ErrorState = Invalid_Peripheral_ID;
+
+	}
+	return Local_ErrorState ;
+}
+
 
 void RCC_voidSetSystemClock(void)
 {
-#if SYSTEM_CLK_SRC == HSI
-	SET_BIT(RCC_CR,0);
-	CLR_BIT(RCC_CFGR,0);
-	CLR_BIT(RCC_CFGR,1);// chossing HSC_RC what clock to operate in the system
+#if SYSTEM_CLOCK_SRC == HSI
+	SET_BIT(RCC_CR,RCC_HSION);      /* Enable HSI Clock (16 MHZ)*/
+	CLR_BIT(RCC_CFGR,CFGR_SW0);    /* Select HSI as System Clock Source */
+	CLR_BIT(RCC_CFGR,CFGR_SW1);
 
 
-#elif  SYSTEM_CLK_SRC == HSC_RC
-	SET_BIT(RCC_CR,16);// enabe HSE CLOCK
-	SET_BIT(RCC_CR,18; // CHOSE RC EXTERNAL CLOCK
-	SET_BIT(RCC_CFGR,0);// chossing HSC_RC what clock to operate in the system
-	CLR_BIT(RCC_CFGR,1);
+#elif SYSTEM_CLOCK_SRC == HSE_RC
+	SET_BIT(RCC_CR,RCC_HSEON);   /* Enable HSE clock */
+	SET_BIT(RCC_CR,RCC_HSEBYP);    /* choose RC external (enable by pass mode)*/
+	SET_BIT(RCC_CFGR,CFGR_SW0);   /* select HSE RC as System clock source */
+	CLR_BIT(RCC_CFGR,CFGR_SW1);
 
-#elif SYSTEM_CLK_SRC == HSC_CRYSTAL
-	SET_BIT(RCC_CR,16);// enabe HSE CLOCK
-	SET_BIT(RCC_CR,18); // CHOSE CRYstal EXTERNAL CLOCK
-	SET_BIT(RCC_CFGR,0);// chossing HSC_RC what clock to operate in the system
-	SET_BIT(RCC_CFGR,1);
-#elif	 SYSTEM_clk_src == PLL
+#elif SYSTEM_CLOCK_SRC == HSE_CRYSTAL
+	SET_BIT(RCC_CR,RCC_HSEON);   /* Enable HSE clock */
+	CLR_BIT(RCC_CR,RCC_HSEBYP);   /* choose crystal external (disable by pass mode)*/
+	SET_BIT(RCC_CFGR,CFGR_SW0);  /* select HSE crystal as System clock source */
+	CLR_BIT(RCC_CFGR,CFGR_SW1);
+#elif SYSTEM_CLOCK_SRC == PLL
+
 
 #else
-#error("wrong system Clock configurations")
+#error ("Wrong System Clock Configuration ")
 #endif
-}
 
-u8 RCC_u8enablePrepheralClock(u8 Copy_u8BUS_ID,u8 Copy_u8Peripheral_ID)
-{
-	switch(Copy_u8BUS_ID)
-	{
-	case RCC_AHB1:
-		SET_BIT(RCC_AHB1ENR,Copy_u8Peripheral_ID);
-		break;
-	case RCC_AHB2:
-		SET_BIT(RCC_AHB2ENR,Copy_u8Peripheral_ID);
-		break;
-	case RCC_APB1:
-		SET_BIT(RCC_APB1ENR,Copy_u8Peripheral_ID);
-		break;
-	case RCC_APB2:
-		SET_BIT(RCC_APB2ENR,Copy_u8Peripheral_ID);
-		break;
-	default:
-		return 1;
-
-	}
-	return 0;
-}
-
-u8 RCC_u8DisablePrepheralClock(u8 Copy_u8BUS_ID,u8 Copy_u8Peripheral_ID)
-{
-	switch(Copy_u8BUS_ID)
-	{
-	case RCC_AHB1:
-		CLR_BIT(RCC_AHB1ENR,Copy_u8Peripheral_ID);
-		break;
-	case RCC_AHB2:
-		CLR_BIT(RCC_AHB2ENR,Copy_u8Peripheral_ID);
-		break;
-	case RCC_APB1:
-		CLR_BIT(RCC_APB1ENR,Copy_u8Peripheral_ID);
-		break;
-	case RCC_APB2:
-		CLR_BIT(RCC_APB2ENR,Copy_u8Peripheral_ID);
-		break;
-	default:
-		return 1;
-	}
-	return 0;
 }

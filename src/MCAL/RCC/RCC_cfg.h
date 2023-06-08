@@ -1,20 +1,11 @@
-/*
- * RCC_config.h
- *
- *  Created on: May 4, 2023
- *      Author: mohnd
- */
 
 #ifndef RCC_CFG_H_
 #define RCC_CFG_H_
 
-// THIS MACRO IS TO CONFG CLOCK SOURCE
-/*aVILABLE OPTION :HSI
- *                : HSC_RC
- *                :HSC_CRYSTAL
- *                :PLL
- *                     */
-#define SYSTEM_CLK_SRC  HSC_CRYSTAL
+/*this macro is to configure the systrem clock source*/
+/* Avilable options : HSI - HSE_RC - HSE_CRYSTAL - PLL */
+#define SYSTEM_CLOCK_SRC        HSI
 
 
-#endif /* RCC_CONFIG_H_ */
+
+#endif
